@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Performance Review</title>
+  <link rel="icon" type="image/png" href="./textures/menu_select.png" />
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="ui-root">
+    <div id="topbar">
+      <div id="brand">Team 4242</div>
+      <div id="hud">
+        <div id="taskLabel">Task: <span id="taskText">—</span></div>
+        <div id="scoreLabel">Score: <span id="scoreText">0</span></div>
+      </div>
+      <div id="patienceWrap" aria-label="Manager patience">
+        <div id="patienceBar"></div>
+      </div>
+      <div id="patienceMood" class="patience-mood" aria-label="Manager mood" title="Manager mood">??</div>
+      <button id="btnDevEnd" class="ghost hidden" title="End current run">End Game</button>
+      <div id="devToolbar" class="dev-toolbar hidden">
+        <div class="dev-mini-group" aria-label="Dev quick launch">
+          <button class="ghost dev-mini-btn" data-dev-game="coding">Coding</button>
+          <button class="ghost dev-mini-btn" data-dev-game="wiring">Wiring</button>
+          <button class="ghost dev-mini-btn" data-dev-game="meter">Meter</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="menu" class="panel menu-shell">
+      <div class="menu-inner">
+        <div id="menuMain" class="menu-main">
+          <h1 id="menuTitle">Performance Review</h1>
+          <p class="muted">
+            Quick you are under review for your yearly performance and your manager HATES you.
+            Make sure they have no reason to fire you by clearing as many tasks as possible!
+          </p>
+          <div id="highScoreRow" class="muted">Recent High Score: <span id="highScoreValue">0</span></div>
+          <div id="levelHint" class="muted">Reach a score of 10 to promote to the next level!.</div>
+          <div class="menu-grid">
+            <button id="btnLevel" class=>Level: Easy</button>
+            <button id="btnFull" class="primary">Play Full Mode (Models + Textures)</button>
+            <button id="btnProto">Play Prototype Mode (Primitives)</button>
+            <button id="btnHowTo" class=>How to Play</button>
+          </div>
+        </div>
+        <div id="menuHelp" class="menu-help hidden">
+          <h2>How to Play</h2>
+          <div class="howto-body">
+         <p><b>Desktop:</b> Move with WASD or Arrow keys. Press <b>E</b> or click to interact with stations and the manager. During wiring tasks, press <b>Space</b> when the indicator is in the green zone.</p>
+
+        <p><b>Mobile:</b> Move using the on-screen joystick and tap the <b>Use</b> button to interact with stations and the manager.</p>
+
+        <p>Each task directs you to a specific workstation (Coding, Wiring, or Multimeter). Stand in front of the highlighted station to begin the mini-game.</p>
+
+        <p>Finish the mini-game to complete the work, then bring the result to the manager to score points. The active station or manager will pulse to guide you.</p>
+
+        <p>The patience bar drains over time. If it reaches zero, the manager loses patience and the game ends. Completing tasks quickly increases your score and unlocks higher difficulty levels.</p>
+
+          </div>
+          <button id="btnHowBack" class="ghost">Back</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="overlay" class="overlay hidden">
+      <div id="minigame" class="panel minigame">
+        <div class="minigame-header">
+          <div id="minigameTitle">Mini-game</div>
+          <button id="closeMini" class="ghost hidden">x</button>
+        </div>
+
+        <!-- Coding mini-game -->
+        <div id="mgCoding" class="mg hidden">
+          <div class="mg-row">
+            <div class="mg-col">
+              <div id="codeTarget" class="codebox code-vim"></div>
+              <div id="codeFeedback" class="mg-caption"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wiring mini-game -->
+        <div id="mgWiring" class="mg hidden">
+          <div class="board-wrap wiring-board">
+            <canvas id="wiringCanvas" width="640" height="320"></canvas>
+            <div id="wiringPins" class="pins"></div>
+            <img id="wiringCircuitArt" class="wiring-circuit" src="./textures/circuit_clipart.png" alt="Circuit diagram art" />
+            <img id="wiringIronArt" class="wiring-iron" src="./textures/solder_iron.png" alt="Soldering iron" />
+          </div>
+          <div id="wiringFeedback" class="mg-caption"></div>
+        </div>
+
+        <!-- Multimeter mini-game -->
+        <div id="mgMeter" class="mg hidden">
+          <div class="board-wrap meter-board">
+            <canvas id="meterCanvas" width="640" height="320"></canvas>
+            <div id="meterPins" class="pins">
+              <img id="meterProbe" class="meter-probe hidden" src="./textures/probe.png" alt="Probe" />
+            </div>
+          </div>
+          <div id="meterFeedback" class="mg-caption"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile controls -->
+    <div id="mobileControls" class="mobile hidden">
+      <div id="joystick" class="joystick" aria-label="Virtual joystick">
+        <div id="stick" class="stick"></div>
+      </div>
+      <button id="btnUse" class="use-btn">Use</button>
+    </div>
+
+    <div id="end" class="overlay hidden">
+      <div class="panel endpanel">
+        <h2 id="endTitle">Game Over</h2>
+        <p id="endReason" class="muted"></p>
+        <p>Tasks completed: <b id="endScore">0</b></p>
+        <div class="menu-grid">
+          <button id="btnRestart" class="primary">Restart</button>
+          <button id="btnBack">Back to Menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="c"></canvas>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
